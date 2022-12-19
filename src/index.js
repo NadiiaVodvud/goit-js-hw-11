@@ -11,32 +11,27 @@ const errorMessage =
   'Sorry, there are no images matching your search query. Please try again.';
 const infoMessage =
   "We're sorry, but you've reached the end of search results.";
-const succesMessage = `Hooray! We found ${totalHits} images.`;
+// const succesMessage = `Hooray! We found ${totalHits} images.`;
 // fetch(`${BASE_URL}?key=${API_KEY}q=${form.value}&image_type=photo&orientation=horizontal&safesearch=true`);
 
 let currentPage = 1;
 let inputValue = '';
-let hitsCounter = 0;
 
 const form = document.getElementById('search-form');
 const galleryContainer = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
 
-loadMoreBtn.style.display = 'none';
+const simpleLightBox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
+hideLoadMoreBtn();
 
 form.addEventListener('submit', onFormSubmit);
 loadMoreBtn.addEventListener('click', onLoadMoreBtnClick);
 
-// function onFormInput(e) {
-//   inputValue[e.target.name] = e.target.value.trim();
-//   console.log(e.target.name);
-//   console.log(e.target.value);
-// }
-
 async function onFormSubmit(e) {
   e.preventDefault();
-  // loadMoreBtn.classList.add('hidden');
-  // loadMoreBtn.classList.remove('hidden');
 
   galleryContainer.innerHTML = '';
 
@@ -52,28 +47,20 @@ async function onFormSubmit(e) {
     const { hits, totalHits } = await getCards();
 
     if (hits.length === 0) {
+      hideLoadMoreBtn();
       Notify.error(`${errorMessage}`);
       galleryContainer.innerHTML = '';
-      loadMoreBtn.style.display = 'none';
       return;
     }
-    // Notify.success(`${succesMessage}`);
+    Notify.success(`Hooray! We found ${totalHits} images.`);
     renderCards(hits);
-    // loadMoreBtn.style.display = 'block';
+    smoothScroll();
+    showLoadMoreBtn();
+    simpleLightBox.refresh();
   } catch (error) {
-    // Notify.failure(`${errorMessage}`);
-    Notify.failure(`Something go wrong`);
-    loadMoreBtn.style.display = 'none';
+    Notify.failure(`Value was entered incorrectly`);
+    hideLoadMoreBtn();
   }
-
-  //   const { input, button } = e.currentTarget.elements;
-  //   console.log(e.currentTarget.elements);
-
-  loadMoreBtn.style.display = 'block';
-  // loadMoreBtn.classList.remove('hidden');
-  // loadMoreBtn.classList.add('load-more');
-
-  //   lightBox.refresh();
 }
 
 async function getCards() {
@@ -108,7 +95,7 @@ function renderCards(hits) {
         comments,
         downloads,
       }) => {
-        return `<div class="photo-card"><a class="gallery__link" href="${largeImageURL}"><img class="gallery__image" src="${webformatURL}" alt="${tags}"  loading="lazy"/></a><div class="info"><p class="info-item"><b>Likes</b><span>${likes}</span></p><p class="info-item"><b>Views</b><span>${views}</span></p><p class="info-item"><b>Comments</b><span>${comments}</span></p><p class="info-item"><b>Downloads</b><span>${downloads}</span></p></div></div>`;
+        return `<div class="photo-card"><a class="gallery-link" href="${largeImageURL}"><img class="gallery-image" src="${webformatURL}" alt="${tags}" width="330"  loading="lazy"/></a><div class="info"><p class="info-item"><b>Likes</b><span>${likes}</span></p><p class="info-item"><b>Views</b><span>${views}</span></p><p class="info-item"><b>Comments</b><span>${comments}</span></p><p class="info-item"><b>Downloads</b><span>${downloads}</span></p></div></div>`;
       }
     )
     .join('');
@@ -119,11 +106,36 @@ function renderCards(hits) {
 async function onLoadMoreBtnClick() {
   // loadMoreBtn.classList.add = 'loading';
   try {
-    const { hits, totalHits } = await getCards();
+    const { hits } = await getCards();
     renderCards(hits);
+    simpleLightBox.refresh();
+    if (hits.length < 40) {
+      hideLoadMoreBtn();
+
+      Notify.info(`${infoMessage}`);
+    }
     // loadMoreBtn.classList.remove = 'loading';
     // loadMoreBtn.classList.add = 'loaded';
   } catch (error) {
-    Notify.failure(`${errorMessage}`);
+    Notify.failure(`Something go wrong`);
   }
+}
+
+function showLoadMoreBtn() {
+  loadMoreBtn.style.display = 'block';
+}
+
+function hideLoadMoreBtn() {
+  loadMoreBtn.style.display = 'none';
+}
+// плавний скролл
+function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
