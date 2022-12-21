@@ -166,3 +166,22 @@ button {
     line-height: 1.5;
   }
 }
+//-----------------------------------
+#arrowTop {
+  height: 50px;
+  width: 59px;
+  border-radius: 50%;
+  background-color: rgba(114, 232, 230, 0.5);
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}

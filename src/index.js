@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
 
+// import InfiniteScroll from 'infinite-scroll';
+
 const API_KEY = '32104603-85e0bbf4ece8015013549a434';
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
@@ -34,6 +36,7 @@ async function onFormSubmit(e) {
   e.preventDefault();
 
   galleryContainer.innerHTML = '';
+  hideLoadMoreBtn();
 
   inputValue = e.currentTarget.searchQuery.value.trim();
   if (inputValue === '') {
@@ -54,7 +57,6 @@ async function onFormSubmit(e) {
     }
     Notify.success(`Hooray! We found ${totalHits} images.`);
     renderCards(hits);
-    smoothScroll();
     showLoadMoreBtn();
     simpleLightBox.refresh();
   } catch (error) {
@@ -108,6 +110,7 @@ async function onLoadMoreBtnClick() {
   try {
     const { hits } = await getCards();
     renderCards(hits);
+    smoothScroll();
     simpleLightBox.refresh();
     if (hits.length < 40) {
       hideLoadMoreBtn();
@@ -128,14 +131,75 @@ function showLoadMoreBtn() {
 function hideLoadMoreBtn() {
   loadMoreBtn.style.display = 'none';
 }
-// плавний скролл
+// прокручування
 function smoothScroll() {
   const { height: cardHeight } = document
     .querySelector('.gallery')
     .firstElementChild.getBoundingClientRect();
 
   window.scrollBy({
-    top: cardHeight * 2,
+    top: cardHeight * 1.7,
     behavior: 'smooth',
   });
 }
+//нескінченний скролл
+
+// function infinityScroll() {
+//   while (true) {
+//     // нижня частина документа
+//     let windowRelativeBottom = document
+//       .querySelector('.gallery')
+//       .getBoundingClientRect().bottom;
+
+//     // якщо користувач не прокрутив достатньо далеко (>100px до кінця)
+//     if (
+//       windowRelativeBottom >
+//       document.querySelector('.gallery').clientHeight + 100
+//     )
+//       break;
+
+//     // додамо більше даних
+//   }
+// }
+
+//---------------------
+// let elem = galleryContainer;
+// let infScroll = new InfiniteScroll(elem, {
+//   // options
+//   path: '.pagination__next',
+//   append: '.post',
+//   history: false,
+// });
+
+// element argument can be a selector string
+// for an individual element
+// let infScroll = new InfiniteScroll('.gallery', {
+//   // options
+//   path: currentPage,
+//   append: '.photo-card',
+//   history: false,
+// });
+
+// //------стрілка вгору-------
+// loadMoreBtn.insertAdjacentHTML(
+//   'beforebegin',
+//   `<div id="arrowTop" hidden>☝</div>`
+// );
+
+// const arrowOnTop = document.querySelector('#arrowTop');
+
+// arrowOnTop.addEventListener('click', onTopClick());
+
+// function onTopClick() {
+//   window.scrollTo(pageXOffset, 0);
+//   // після scrollTo відбудеться подія "scroll", тому стрілка автоматично сховається
+// }
+
+// // window.addEventListener('scroll', function () {
+// //   arrowOnTop.hidden = pageYOffset < document.documentElement.clientHeight;
+// // });
+// window.addEventListener('scroll', onScrollPosition());
+
+// function onScrollPosition() {
+//   arrowOnTop.hidden = pageYOffset < document.documentElement.clientHeight;
+// }
