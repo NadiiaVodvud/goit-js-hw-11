@@ -181,23 +181,43 @@ function smoothScroll() {
 // });
 
 // //------стрілка вгору-------
-// loadMoreBtn.insertAdjacentHTML(
-//   'beforebegin',
-//   `<div id="arrowTop" hidden>☝</div>`
+loadMoreBtn.insertAdjacentHTML(
+  'beforebegin',
+  `<div id="arrowTop" hidden>☝</div>`
+);
+
+const arrowOnTop = document.querySelector('#arrowTop');
+
+arrowOnTop.addEventListener('click', e => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+});
+
+// const totalHeight = Math.max(
+//   body.scrollHeight,
+//   body.offsetHeight,
+//   html.clientHeight,
+//   html.scrollHeight,
+//   html.offsetHeight
 // );
 
-// const arrowOnTop = document.querySelector('#arrowTop');
+// console.log(window.innerHeight);
+// console.log(window.scrollY);
+// console.log(pageXOffset);
+// console.log(document.documentElement.clientHeight);
 
 // arrowOnTop.addEventListener('click', onTopClick());
 
 // function onTopClick() {
 //   window.scrollTo(pageXOffset, 0);
-//   // після scrollTo відбудеться подія "scroll", тому стрілка автоматично сховається
+// після scrollTo відбудеться подія "scroll", тому стрілка автоматично сховається
 // }
 
-// // window.addEventListener('scroll', function () {
-// //   arrowOnTop.hidden = pageYOffset < document.documentElement.clientHeight;
-// // });
+// window.addEventListener('scroll', function () {
+//   arrowOnTop.hidden = pageYOffset < document.documentElement.clientHeight;
+// });
 // window.addEventListener('scroll', onScrollPosition());
 
 // function onScrollPosition() {
